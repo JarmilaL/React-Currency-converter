@@ -1,24 +1,39 @@
-import './App.css';
-
 // `https://api.frankfurter.app/latest?amount=100&from=EUR&to=USD`
 
+import { useEffect, useState } from 'react';
+
 export default function App() {
+  const [currencies, setCurrencies] = useState(['USD', 'EUR']);
+
+  useEffect(function () {
+    async function getCurrencies() {
+      const response = await fetch('https://api.frankfurter.app/currencies');
+      const data = await response.json();
+
+      setCurrencies(Object.entries(data).map(([key, value]) => key));
+    }
+
+    getCurrencies();
+  }, []);
+
   return (
     <div>
       <input type="text" />
-      <select>
-        <option value="USD">USD</option>
-        <option value="EUR">EUR</option>
-        <option value="CAD">CAD</option>
-        <option value="INR">INR</option>
-      </select>
-      <select>
-        <option value="USD">USD</option>
-        <option value="EUR">EUR</option>
-        <option value="CAD">CAD</option>
-        <option value="INR">INR</option>
-      </select>
+      <CurrencySelect currencies={currencies} />
+      <CurrencySelect currencies={currencies} />
       <p>OUTPUT</p>
     </div>
+  );
+}
+
+function CurrencySelect({ currencies }) {
+  return (
+    <select>
+      {currencies.map((cur) => (
+        <option value={cur} key={cur}>
+          {cur}
+        </option>
+      ))}
+    </select>
   );
 }
